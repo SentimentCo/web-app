@@ -5,18 +5,21 @@ import json
 import os
 import nltk
 import random
+from SentimentIntensityAnalyzer import SentimentIntensityAnalyzer
 
 app = Flask(__name__)
 photos = UploadSet('photos', IMAGES)
 app.config['UPLOADED_PHOTOS_DEST'] = 'static/img'
 configure_uploads(app, photos)
 
+SentimentIntensityClassifier = SentimentIntensityAnalyzer()
+
 
 # english_bot.set_trainer(ChatterBotCorpusTrainer)
 # english_bot.train("chatterbot.corpus.english")
 def predict_sentence(sent):
     word_count = len(nltk.word_tokenize(sent))
-    scores = get_score()
+    scores = get_score(sent)
     labels = get_labels(scores)
     response = {
         'sentiment': {
@@ -35,18 +38,52 @@ def predict_sentence(sent):
     }
     return response
 
-def get_score():
-    l = []
-    for i in range(8):
-        l.append(random.random())
-    return l
+def get_score(sent):
+    score = SentimentIntensityClassifier.polarity_scores(sent)["compound"]
+
+    # labels = ["anticipation", "joy", "trust", "fear", "surprise", "sadness", "disgust", "anger"];
+
+    if score > -0.5 and score < 0.5:
+        # neutral
+        l = []
+        for i in range(8):
+            l.append(random.uniform(0, 0.3))
+        return l
+    elif score > 0.5:
+        # positive
+        positive_idx = [0, 1]
+        less_possitive_idx = [2]
+        l = []
+        for i in range(8):
+            if i in positive_idx:
+                l.append(random.uniform(0.4, 0.85))
+            elif i in less_possitive_idx:
+                l.append(random.uniform(0.4, 0.75))
+            else:
+                l.append(random.uniform(0, 0.3))
+        return l
+    else:
+        #negative
+        negative_idx = [3, 4, 5, 7]
+        l = []
+        for i in range(8):
+            if i in negative_idx:
+                l.append(random.uniform(0.4, 0.85))
+            else:
+                l.append(random.uniform(0, 0.3))
+        return l
 
 def get_labels(scores):
-    labels = ["anticipation", "joy", "trust", "fear", "surprise", "sadness", "disgust", "anger"];
+
+    labels = ["anticipation", "joy", "trust", "fear", "surprise", "sadness", "disgust", "anger"]
     answers = []
+    is_significant = False
     for i, s in enumerate(scores):
-        if i > 0.7:
+        if s > 0.7:
             answers.append(labels[i])
+            is_significant = True
+    if not is_significant:
+        answers.append(["No strong emotion"])
     return answers
 
 

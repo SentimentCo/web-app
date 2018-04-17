@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script type="text/javascript">
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	theme: "light1", // "light2", "dark1", "dark2"
+	animationEnabled: true, // change to true		
+	title:{
+		text: "Basic Column Chart"
+	},
+	data: [
+	{
+		// Change type to "bar", "area", "spline", "pie",etc.
+		type: "column",
+		dataPoints: [
+			{ label: "anticipation",  y: 0.941  },
+			{ label: "joy", y: 0.73  },
+			{ label: "trust", y: 0.59  },
+			{ label: "fear",  y: 0.01  },
+			{ label: "surprise",  y: 0.042  },
+			{ label: "sadness",  y: 0.05  },
+			{ label: "disgust",  y: 0.03  },
+			{ label: "anger",  y: 0.01  }
+		]
+	}
+	]
+});
+chart.render();
+
+}
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"> </script>
+</body>
+</html>

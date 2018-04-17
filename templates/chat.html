@@ -191,7 +191,7 @@ chart.render();
                   return "<strong> Document </strong><br>"
               } else {
                   return "<strong> Sentence # " + i + "</strong><br>"
-              }  
+              }
             };
             $('#chatbot-form-btn').click(function(e) {
                 e.preventDefault();
@@ -231,7 +231,7 @@ chart.render();
                             $(".fixed-panel").stop().animate({ scrollTop: $(".fixed-panel")[0].scrollHeight}, 1000);
                         }
 
-                        var infer_labels = "Predicted sentiments are <strong>"+response_obj[0]["label"]+"</strong>";
+                        var infer_labels = "Predicted sentiments are <br><strong>"+response_obj[0]["label"]+"</strong>";
                         $('#id-text').html(infer_labels );
 
 
