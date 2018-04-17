@@ -54,11 +54,11 @@ def get_labels(scores):
 def predict_sentiment(text, type):
     if type == "document":
         pred = predict_sentence(text)
-        print(pred)
         return json.dumps([pred])
     else:
         sentences = nltk.sent_tokenize(text)
         response = []
+        response.append(predict_sentence(text))
         for sent in sentences:
             response.append(predict_sentence(sent))
         return json.dumps(response)
@@ -71,7 +71,6 @@ def home():
 def get_bot_response():
     userText = request.args.get('messageText')
     type = request.args.get('type')
-    print(type)
     pred = predict_sentiment(userText, type)
 
     return pred

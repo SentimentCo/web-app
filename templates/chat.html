@@ -149,7 +149,7 @@ var chart = new CanvasJS.Chart("chartContainer", {
 	theme: "light1", // "light2", "dark1", "dark2"
 	animationEnabled: true, // change to true
 	title:{
-		text: "Basic Column Chart"
+		text: "Overall Sentiment Scores"
 	},
 	data: [
 	{
@@ -169,6 +169,30 @@ var chart = new CanvasJS.Chart("chartContainer", {
 	]
 });
 chart.render();
+            var display_score = function (scores, l, i) {
+                if (l > 1 && i === 0) {
+                    return "";
+                }
+                var labels = ["anticipation", "joy", "trust", "fear", "surprise", "sadness", "disgust", "anger"];
+                var score_str = "<br>";
+                for (var i=0; i<labels.length; i++) {
+                    score = scores[labels[i]].toString();
+                    console.log(typeof score);
+                    if (i === 4) {
+                        score_str += "<br>"
+                    }
+                    score_str += labels[i]+": "+score.substring(0, 4) + "     ";
+                }
+                return score_str ;
+
+            };
+            var display_sentence = function (i) {
+              if (i === 0) {
+                  return "<strong> Document </strong><br>"
+              } else {
+                  return "<strong> Sentence # " + i + "</strong><br>"
+              }  
+            };
             $('#chatbot-form-btn').click(function(e) {
                 e.preventDefault();
                 $('#chatbot-form').submit();
@@ -181,8 +205,8 @@ chart.render();
                 var detect_type = $('#detecttype').text().trim();
                 var labels = ["anticipation", "joy", "trust", "fear", "surprise", "sadness", "disgust", "anger"];
 
-                $(".media-list").append('<li class="media"><div class="media-body"><div class="media"><div class="media-body"><p align="right" style="color:#8a6d3b">' + message + '</p><hr/></div></div></div></li>');
-                $(".fixed-panel").stop().animate({ scrollTop: $(".fixed-panel")[0].scrollHeight}, 1000);
+                {#$(".media-list").append('<li class="media"><div class="media-body"><div class="media"><div class="media-body"><p align="right" style="color:#8a6d3b">' + message + '</p><hr/></div></div></div></li>');#}
+                {#$(".fixed-panel").stop().animate({ scrollTop: $(".fixed-panel")[0].scrollHeight}, 1000);#}
                 console.log({messageText: message, type: detect_type})
                 $.ajax({
                     type: "get",
@@ -202,7 +226,7 @@ chart.render();
                         var response_l = response_obj.length;
                         for (var i = 0; i<response_l; i++) {
                             $(".media-list").append('<li class="media"><div class="media-body"><div class="media"><div class="media-body" style="color:#8a6d3b">'
-                                + response_obj[i]["sent"] + "\n\n"+ JSON.stringify(response_obj[i]["sentiment"]) + '<hr/></div></div></div></li>');
+                                + display_sentence(i)+ response_obj[i]["sent"] + "<br>"+ display_score(response_obj[i]["sentiment"], response_l, i) + '<hr/></div></div></div></li>');
 
                             $(".fixed-panel").stop().animate({ scrollTop: $(".fixed-panel")[0].scrollHeight}, 1000);
                         }
