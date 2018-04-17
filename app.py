@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 
 import json
-import os
+from os import path
 import nltk
 import random
 from SentimentIntensityAnalyzer import SentimentIntensityAnalyzer
@@ -86,16 +86,37 @@ def get_labels(scores):
         answers.append(["No strong emotion"])
     return answers
 
+def load_cache(sent):
+    cache_pred = json.load(open(path.join(app.root_path, "cache.json")))
+    if cache_pred != None and sent in cache_pred:
+        return cache_pred[sent]
+    else:
+        return None
 
+def save_cache(text, pred):
+    with open(path.join(app.root_path, "cache.json")) as input:
+        cache = json.load(input)
+        if cache == None:
+            cache = {text:pred}
+        else:
+            cache[text] = pred
+    with open(path.join(app.root_path, "cache.json"), 'w') as output:
+        output.write(json.dumps(cache))
 
 def predict_sentiment(text, type):
-    if type == "document":
+    response = []
+    cache_pred = load_cache(text)
+    if cache_pred != None:
+        response.append(cache_pred)
+    else:
         pred = predict_sentence(text)
-        return json.dumps([pred])
+        save_cache(text, pred)
+        response.append(pred)
+
+    if type == "document":
+        return json.dumps(response)
     else:
         sentences = nltk.sent_tokenize(text)
-        response = []
-        response.append(predict_sentence(text))
         for sent in sentences:
             response.append(predict_sentence(sent))
         return json.dumps(response)
